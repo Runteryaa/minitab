@@ -1,0 +1,46 @@
+{
+  "extName": { "message": "MiniTab" },
+  "extDesc": { "message": "Vista previa rápida de enlaces sin abrir una nueva pestaña." },
+  
+  "btnPin": { "message": "Fijar" },
+  "btnBookmark": { "message": "Guardar" },
+  "btnScreenshot": { "message": "Captura de pantalla" },
+  "btnMute": { "message": "Silenciar" },
+  "btnUnmute": { "message": "Activar sonido" },
+  "btnOpenNewTab": { "message": "Abrir en nueva pestaña" },
+  "btnShare": { "message": "Compartir" },
+  "btnFullscreen": { "message": "Pantalla completa" },
+  "btnHalfscreen": { "message": "Media pantalla" },
+  "btnZoomIn": { "message": "Acercar" },
+  "btnZoomOut": { "message": "Alejar" },
+  "btnSettings": { "message": "Configuración" },
+  "btnClose": { "message": "Cerrar" },
+  
+  "historyTitle": { "message": "Historial" },
+  "bookmarksTitle": { "message": "⭐️ Guardados" },
+  "historyEmpty": { "message": "Vacío." },
+  "linkConnection": { "message": "Enlace" },
+  "copied": { "message": "COPIADO" },
+  
+  "settingsTitle": { "message": "Configuración de MiniTab" },
+  "appearanceTitle": { "message": "Apariencia" },
+  "themePref": { "message": "Preferencia de tema" },
+  "themeDark": { "message": "Oscuro" },
+  "themeLight": { "message": "Claro" },
+  "accentColor": { "message": "Color de acento" },
+  "browserLikeTabs": { "message": "Pestañas tipo navegador" },
+  "defaultSearchEngine": { "message": "Motor de búsqueda" },
+  
+  "activationTriggers": { "message": "Desencadenadores de apertura" },
+  "longClick": { "message": "Clic largo" },
+  "longHover": { "message": "Mantener cursor (Hover)" },
+  "hoverSpace": { "message": "Tecla Espacio sobre el enlace" },
+  "dragLink": { "message": "Arrastrar enlace" },
+  "altClick": { "message": "Alt + Clic" },
+  "ctrlShiftClick": { "message": "Ctrl + Shift + Clic" },
+  
+  "closeTriggers": { "message": "Desencadenadores de cierre" },
+  "closeOutside": { "message": "Cerrar al hacer clic afuera" },
+  "closeMouseLeave": { "message": "Cerrar al sacar el cursor (Auto)" },
+  "closeScroll": { "message": "Cerrar al desplazar (Scroll)" }
+}

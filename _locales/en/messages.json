@@ -1,0 +1,46 @@
+{
+  "extName": { "message": "MiniTab" },
+  "extDesc": { "message": "Quickly preview links without opening a new tab." },
+  
+  "btnPin": { "message": "Pin" },
+  "btnBookmark": { "message": "Bookmark" },
+  "btnScreenshot": { "message": "Screenshot" },
+  "btnMute": { "message": "Mute" },
+  "btnUnmute": { "message": "Unmute" },
+  "btnOpenNewTab": { "message": "Open in New Tab" },
+  "btnShare": { "message": "Share" },
+  "btnFullscreen": { "message": "Fullscreen" },
+  "btnHalfscreen": { "message": "Halfscreen" },
+  "btnZoomIn": { "message": "Zoom In" },
+  "btnZoomOut": { "message": "Zoom Out" },
+  "btnSettings": { "message": "Settings" },
+  "btnClose": { "message": "Close" },
+  
+  "historyTitle": { "message": "History" },
+  "bookmarksTitle": { "message": "⭐️ Bookmarks" },
+  "historyEmpty": { "message": "It's empty here." },
+  "linkConnection": { "message": "Link" },
+  "copied": { "message": "COPIED" },
+  
+  "settingsTitle": { "message": "MiniTab Settings" },
+  "appearanceTitle": { "message": "Appearance" },
+  "themePref": { "message": "Theme Preference" },
+  "themeDark": { "message": "Dark" },
+  "themeLight": { "message": "Light" },
+  "accentColor": { "message": "Accent Color" },
+  "browserLikeTabs": { "message": "Browser-like Tabs" },
+  "defaultSearchEngine": { "message": "Default Search Engine" },
+  
+  "activationTriggers": { "message": "Activation Triggers" },
+  "longClick": { "message": "Long Click" },
+  "longHover": { "message": "Long Hover" },
+  "hoverSpace": { "message": "Hover + Space Key" },
+  "dragLink": { "message": "Drag Link" },
+  "altClick": { "message": "Alt + Click" },
+  "ctrlShiftClick": { "message": "Ctrl + Shift + Click" },
+  
+  "closeTriggers": { "message": "Close Triggers" },
+  "closeOutside": { "message": "Close on Outside Click" },
+  "closeMouseLeave": { "message": "Close on Mouse Leave (Auto-close)" },
+  "closeScroll": { "message": "Close on Scroll" }
+}

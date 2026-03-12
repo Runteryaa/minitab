@@ -1,0 +1,46 @@
+{
+  "extName": { "message": "MiniTab" },
+  "extDesc": { "message": "Bağlantıları yeni sekme açmadan hızlıca önizleyin." },
+  
+  "btnPin": { "message": "Sabitle" },
+  "btnBookmark": { "message": "Kaydet (Sonra Oku)" },
+  "btnScreenshot": { "message": "Ekran Görüntüsü Al" },
+  "btnMute": { "message": "Sessize Al" },
+  "btnUnmute": { "message": "Sesi Aç" },
+  "btnOpenNewTab": { "message": "Yeni Sekmede Aç" },
+  "btnShare": { "message": "Paylaş" },
+  "btnFullscreen": { "message": "Tam Ekran" },
+  "btnHalfscreen": { "message": "Yarım Ekran" },
+  "btnZoomIn": { "message": "Yakınlaştır" },
+  "btnZoomOut": { "message": "Uzaklaştır" },
+  "btnSettings": { "message": "Ayarlar" },
+  "btnClose": { "message": "Kapat" },
+  
+  "historyTitle": { "message": "Geçmiş" },
+  "bookmarksTitle": { "message": "⭐️ Kaydedilenler" },
+  "historyEmpty": { "message": "Burası henüz boş." },
+  "linkConnection": { "message": "Bağlantı" },
+  "copied": { "message": "KOPYALANDI" },
+  
+  "settingsTitle": { "message": "MiniTab Ayarları" },
+  "appearanceTitle": { "message": "Görünüm" },
+  "themePref": { "message": "Tema Tercihi" },
+  "themeDark": { "message": "Koyu" },
+  "themeLight": { "message": "Açık" },
+  "accentColor": { "message": "Vurgu Rengi" },
+  "browserLikeTabs": { "message": "Tarayıcı Tipi Sekmeler" },
+  "defaultSearchEngine": { "message": "Varsayılan Arama Motoru" },
+  
+  "activationTriggers": { "message": "Açılma Tetikleyicileri" },
+  "longClick": { "message": "Uzun Tıklama" },
+  "longHover": { "message": "Uzun Bekleme (Hover)" },
+  "hoverSpace": { "message": "Üzerindeyken Boşluk (Space) Tuşu" },
+  "dragLink": { "message": "Bağlantıyı Sürükleme" },
+  "altClick": { "message": "Alt + Tıklama" },
+  "ctrlShiftClick": { "message": "Ctrl + Shift + Tıklama" },
+  
+  "closeTriggers": { "message": "Kapanma Tetikleyicileri" },
+  "closeOutside": { "message": "Dışarı Tıklayınca Kapat" },
+  "closeMouseLeave": { "message": "Fare Pencereden Çıkınca Kapat (Otomatik)" },
+  "closeScroll": { "message": "Sayfa Kaydırılınca Kapat" }
+}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MiniTab Settings</title>
+    <style>
+        :root {
+            --mt-accent: #4da6ff; /* Varsayılan renk, JS ile değişecek */
+        }
+        body { background-color: #121212; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; padding: 40px 0; margin: 0; }
+        .container { background-color: #1e1e1e; border: 1px solid #333; border-radius: 12px; padding: 30px; width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; color: #fff; }
+        
+        /* Başlıklar artık tema rengini alacak */
+        h3 { margin-top: 30px; margin-bottom: 15px; color: var(--mt-accent); font-size: 16px; border-bottom: 1px solid #333; padding-bottom: 5px;}
+        
+        .setting-item { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 5px 0; }
+        .setting-info { display: flex; align-items: center; gap: 10px; }
+        .setting-info span { font-size: 14px; color: #ccc; }
+        
+        /* Input focus olduğunda tema rengini alacak */
+        .number-input { background: #111; border: 1px solid #444; color: #fff; padding: 4px 8px; border-radius: 6px; width: 60px; font-size: 14px; text-align: center; outline: none; transition: border-color 0.2s;}
+        .number-input:focus { border-color: var(--mt-accent); }
+        
+        select { background-color: #111; color: #fff; border: 1px solid #444; padding: 6px 10px; border-radius: 8px; outline: none; font-size: 13px; cursor: pointer; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .3s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        
+        /* Toggle aktif olduğunda tema rengini alacak */
+        input:checked + .slider { background-color: var(--mt-accent); }
+        input:checked + .slider:before { transform: translateX(18px); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 data-i18n="settingsTitle"></h2>
+        
+	    <h3 data-i18n="appearanceTitle"></h3>
+        
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="themePref"></span></div>
+            <select id="themePref">
+                <option value="dark" data-i18n="themeDark"></option>
+                <option value="light" data-i18n="themeLight"></option>
+            </select>
+        </div>
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="accentColor"></span></div>
+            <input type="color" id="accentColor" value="#4da6ff" style="background: none; border: none; cursor: pointer; width: 40px; height: 30px;">
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="browserLikeTabs"></span></div>
+            <label class="switch"><input type="checkbox" id="useTabs"><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="defaultSearchEngine"></span></div>
+            <select id="searchEngine"><option value="google">Google</option><option value="yandex">Yandex</option></select>
+        </div>
+
+        <h3 data-i18n="activationTriggers"></h3>
+        
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="longClick"></span></div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <input type="number" id="longClickTime" class="number-input" value="500" min="100" max="3000">
+                <label class="switch"><input type="checkbox" id="triggerLongClick"><span class="slider"></span></label>
+            </div>
+        </div>
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="hoverSpace"></span></div>
+            <label class="switch"><input type="checkbox" id="triggerHoverSpace"><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="dragLink"></span></div>
+            <label class="switch"><input type="checkbox" id="triggerDragLink"><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="altClick"></span></div>
+            <label class="switch"><input type="checkbox" id="triggerAltClick" checked><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="ctrlShiftClick"></span></div>
+            <label class="switch"><input type="checkbox" id="triggerCtrlShiftClick"><span class="slider"></span></label>
+        </div>
+
+        <h3 data-i18n="closeTriggers"></h3>
+        
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="closeOutside"></span></div>
+            <label class="switch"><input type="checkbox" id="closeOutside" checked><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="closeMouseLeave"></span></div>
+            <label class="switch"><input type="checkbox" id="closeMouseLeave"><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+            <div class="setting-info"><span data-i18n="closeScroll"></span></div>
+            <label class="switch"><input type="checkbox" id="closeScroll"><span class="slider"></span></label>
+        </div>
+    </div>
+    <script src="options.js"></script>
+</body>
+</html>
