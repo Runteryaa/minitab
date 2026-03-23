@@ -1,0 +1,1 @@
+better "Max Focus" extension
