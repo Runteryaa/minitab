@@ -1,51 +1,10 @@
 // ==========================================
-// --- ÇERÇEVE (FRAME) KİMLİĞİ BELİRLEME ---
+// --- KİMLİK BELİRLEME (FRAME IDENTIFICATION) ---
 // ==========================================
 const isTop = (window === window.top);
-// MiniTab'ın kendi oluşturduğu iframe'lerin içine sızmayı engellemek için isim kontrolü:
 const isMiniTab = (window.name === 'minitab-iframe');
 
-// ==========================================
-// --- IFRAME İÇİ GÖREVLER (Sadece Alt Çerçevelerde Çalışır) ---
-// ==========================================
-if (!isTop) {
-    let muteObserver = null;
-    
-    window.addEventListener('message', (e) => {
-        if (e.data && e.data.type === 'MINITAB_MUTE') {
-            const applyMute = (state) => { document.querySelectorAll('video, audio').forEach(media => media.muted = state); };
-            applyMute(e.data.state);
-            if (e.data.state) {
-                if (!muteObserver) { muteObserver = new MutationObserver(() => applyMute(true)); muteObserver.observe(document.documentElement, { childList: true, subtree: true }); }
-            } else {
-                if (muteObserver) { muteObserver.disconnect(); muteObserver = null; }
-            }
-        }
-        if (e.data && e.data.type === 'MINITAB_REQ_URL') {
-            e.source.postMessage({ type: 'MINITAB_RES_URL', url: window.location.href }, '*');
-        }
-    });
-
-    // İframe içindeki URL güncellemelerini takip edip ana pencereye bildirir
-    let currentIframeUrl = window.location.href;
-    setInterval(() => {
-        if (window.location.href !== currentIframeUrl) {
-            currentIframeUrl = window.location.href;
-            window.top.postMessage({ type: 'MINITAB_URL_UPDATED', url: currentIframeUrl }, '*');
-        }
-    }, 500);
-
-    window.addEventListener('load', () => {
-        if (window.location.href !== currentIframeUrl) {
-            currentIframeUrl = window.location.href;
-            window.top.postMessage({ type: 'MINITAB_URL_UPDATED', url: currentIframeUrl }, '*');
-        }
-    });
-}
-
-// ==========================================
-// --- ORTAK AYARLAR (MiniTab Hariç Tüm Çerçevelerde) ---
-// ==========================================
+// Ortak Ayarlar
 let prefs = {
     useTabs: true, searchEngine: 'google', themePref: 'dark', accentColor: '#4da6ff',
     triggerLongClick: true, longClickTime: 500, triggerLongHover: false, triggerHoverSpace: false, 
@@ -61,10 +20,13 @@ if (!isMiniTab) {
 }
 
 // ==========================================
-// --- TEMA VE CSS ---
+// --- CSS ENJEKSİYONU ---
 // ==========================================
 const themeStyles = document.createElement('style');
-if (!isMiniTab) document.head.appendChild(themeStyles);
+if (!isMiniTab) {
+    if (document.head) document.head.appendChild(themeStyles);
+    else document.documentElement.appendChild(themeStyles);
+}
 
 function updateThemeCSS() {
     if (isMiniTab) return;
@@ -84,7 +46,6 @@ function updateThemeCSS() {
             --mt-border: ${border}; --mt-text: ${text}; --mt-text-muted: ${textMuted}; 
             --mt-hover: ${hoverBg}; --mt-accent: ${accent}; 
         }
-        /* Her iframe'in içine eklenecek olan fare animasyonu CSS'i */
         .minitab-progress-indicator {
             position: fixed; width: 32px; height: 32px; 
             border: 2px solid var(--mt-accent); border-radius: 50%; 
@@ -92,8 +53,7 @@ function updateThemeCSS() {
             opacity: 0; transition: opacity 0.15s ease; 
             display: flex; align-items: center; justify-content: center; 
             transform: translate(-50%, -50%); box-sizing: border-box;
-            background: rgba(0, 0, 0, 0.15); 
-            backdrop-filter: blur(2px);
+            background: rgba(0, 0, 0, 0.15); backdrop-filter: blur(2px);
         }
         .minitab-progress-dot {
             width: 100%; height: 100%; 
@@ -102,7 +62,6 @@ function updateThemeCSS() {
         }
     `;
 
-    // Sadece ana sayfaya (Top Window) özgü arayüz CSS'leri
     if (isTop) {
         css += `
             .minitab-btn { background: none; border: none; color: var(--mt-text-muted); cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.1s, color 0.1s, transform 0.1s; }
@@ -122,11 +81,41 @@ function updateThemeCSS() {
 }
 
 // ==========================================
-// --- ANA SAYFA ARAYÜZÜ VE MANTIK (SADECE TOP WINDOW) ---
+// --- SADECE IFRAME'LER İÇİN İLETİŞİM ---
 // ==========================================
+if (!isTop && !isMiniTab) {
+    let currentIframeUrl = window.location.href;
+    setInterval(() => {
+        if (window.location.href !== currentIframeUrl) {
+            currentIframeUrl = window.location.href;
+            window.top.postMessage({ type: 'MINITAB_URL_UPDATED', url: currentIframeUrl }, '*');
+        }
+    }, 500);
+}
+
+if (isMiniTab) {
+    let muteObserver = null;
+    window.addEventListener('message', (e) => {
+        if (e.data && e.data.type === 'MINITAB_MUTE') {
+            const applyMute = (state) => { document.querySelectorAll('video, audio').forEach(media => media.muted = state); };
+            applyMute(e.data.state);
+            if (e.data.state) {
+                if (!muteObserver) { muteObserver = new MutationObserver(() => applyMute(true)); muteObserver.observe(document.documentElement, { childList: true, subtree: true }); }
+            } else {
+                if (muteObserver) { muteObserver.disconnect(); muteObserver = null; }
+            }
+        }
+        if (e.data && e.data.type === 'MINITAB_REQ_URL') {
+            e.source.postMessage({ type: 'MINITAB_RES_URL', url: window.location.href }, '*');
+        }
+    });
+}
+
+// ==========================================
+// --- ANA SAYFA (TOP WINDOW) MOTORU ---
+// ==========================================
+let triggerMiniTab = function() {}; 
 let activePopups = []; 
-let savedWindowPrefs = { top: '10vh', left: '15vw', width: '65vw', height: '75vh' };
-let triggerMiniTab; // Tüm sayfa fonksiyonlarının erişebilmesi için dışarıda tanımladık
 
 if (isTop) {
     const icons = {
@@ -146,7 +135,7 @@ if (isTop) {
     };
 
     function getDomain(url) { try { return new URL(url).hostname.replace('www.', ''); } catch(e) { return chrome.i18n.getMessage("linkConnection") || "Link"; } }
-    
+    let savedWindowPrefs = { top: '10vh', left: '15vw', width: '65vw', height: '75vh' };
     chrome.storage.local.get(['windowPrefs'], (data) => { if (data.windowPrefs) Object.assign(savedWindowPrefs, data.windowPrefs); });
     let prefsTimeout;
     function saveWindowPrefs(newPrefs) {
@@ -155,30 +144,18 @@ if (isTop) {
         prefsTimeout = setTimeout(() => chrome.storage.local.set({ windowPrefs: savedWindowPrefs }), 500);
     }
 
-    // Başka iframe'lerden gelen MİNİTAB AÇMA veya KAPATMA komutlarını dinler
+    // Ana pencere: Diğer sayfalardan gelen mesajları dinler
     window.addEventListener('message', (e) => {
+        if (e.data && e.data.type === 'MINITAB_OPEN') {
+            triggerMiniTab(e.data.url);
+        }
+        if (e.data && e.data.type === 'MINITAB_CLOSE_OUTSIDE') {
+            if (prefs.closeOutside) activePopups.forEach(p => { if (!p.isPinned) p.close(); });
+        }
         if (e.data && e.data.type === 'MINITAB_RES_URL') {
             chrome.runtime.sendMessage({ action: 'openTab', url: e.data.url });
             activePopups.forEach(p => { if (p.waitingForUrl) { p.waitingForUrl = false; p.close(); } });
         }
-        
-        // BAŞKA BİR IFRAME'DEN MİNİTAB AÇMA İSTEĞİ GELDİ
-        if (e.data && e.data.type === 'MINITAB_OPEN') {
-            triggerMiniTab(e.data.url);
-        }
-
-        // BAŞKA BİR IFRAME'DE DIŞARI TIKLANDI
-        if (e.data && e.data.type === 'MINITAB_CLOSE_OUTSIDE') {
-            if (!prefs.closeOutside) return;
-            activePopups.forEach(p => { if (!p.isPinned) p.close(); });
-        }
-
-        // BAŞKA BİR IFRAME'DE SCROLL YAPILDI
-        if (e.data && e.data.type === 'MINITAB_CLOSE_SCROLL') {
-            if (!prefs.closeScroll) return;
-            activePopups.forEach(p => { if (!p.isPinned) p.close(); });
-        }
-        
         if (e.data && e.data.type === 'MINITAB_URL_UPDATED') {
             const newUrl = e.data.url;
             activePopups.forEach(popup => {
@@ -286,10 +263,8 @@ if (isTop) {
         const screenshotBtn = createBtn(icons.screenshot, chrome.i18n.getMessage("btnScreenshot") || "Screenshot", function() {
             const prevColor = this.style.color;
             this.style.color = 'var(--mt-accent)'; 
-            
             const rect = popup.iframeWrapper.getBoundingClientRect();
             const dpr = window.devicePixelRatio;
-            
             chrome.runtime.sendMessage({ action: 'takeScreenshot' }, (response) => {
                 if (response && response.dataUrl) {
                     const img = new Image();
@@ -299,7 +274,6 @@ if (isTop) {
                         canvas.height = rect.height * dpr;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, rect.left * dpr, rect.top * dpr, rect.width * dpr, rect.height * dpr, 0, 0, rect.width * dpr, rect.height * dpr);
-                        
                         const a = document.createElement('a');
                         a.download = `MiniTab_Snap_${Date.now()}.png`;
                         a.href = canvas.toDataURL('image/png');
@@ -382,12 +356,9 @@ if (isTop) {
         let closeTimer = null;
         popup.container.addEventListener('mouseleave', () => {
             if (prefs.closeMouseLeave && !popup.isPinned) {
-                closeProgress.style.transition = 'none';
-                closeProgress.style.width = '100%';
-                closeProgress.style.opacity = '1';
+                closeProgress.style.transition = 'none'; closeProgress.style.width = '100%'; closeProgress.style.opacity = '1';
                 void closeProgress.offsetWidth; 
-                closeProgress.style.transition = 'width 3s linear';
-                closeProgress.style.width = '0%';
+                closeProgress.style.transition = 'width 3s linear'; closeProgress.style.width = '0%';
                 closeTimer = setTimeout(() => popup.close(), 3000);
             }
         });
@@ -471,8 +442,7 @@ if (isTop) {
             closeBtn.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); popup.removeTab(id); });
             tabEl.append(titleSpan, closeBtn); tabEl.addEventListener('mousedown', () => popup.activateTab(id));
 
-            const iframeEl = document.createElement('iframe'); iframeEl.src = url;
-            // DİKKAT: İframe'in ismini veriyoruz ki kendi içinde eklentiyi tekrar çizmesin
+            const iframeEl = document.createElement('iframe'); 
             iframeEl.name = 'minitab-iframe';
             iframeEl.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; clipboard-write; fullscreen; microphone; camera');
             iframeEl.setAttribute('referrerpolicy', 'no-referrer');
@@ -482,6 +452,11 @@ if (isTop) {
 
             popup.tabs.push({ id, url, tabEl, iframeEl, titleSpan });
             popup.headerEl.appendChild(tabEl); popup.iframeWrapper.appendChild(iframeEl); popup.activateTab(id);
+            
+            // LİNK GÜVENLİK DUVARINDAN DİNAMİK GEÇİRİLİYOR
+            chrome.runtime.sendMessage({ action: 'prepareUrl', url: url }, () => {
+                iframeEl.src = url;
+            });
         };
 
         popup.activateTab = (id) => {
@@ -502,8 +477,16 @@ if (isTop) {
         popup.updateActiveTab = (url) => { 
             saveToHistory(url); popup.updateBookmarkIcon(url);
             const active = popup.tabs.find(t => t.id === popup.activeTabId); 
-            if (active) { active.url = url; active.iframeEl.src = url; active.titleSpan.innerText = getDomain(url); popup.urlInput.value = url; } 
+            if (active) { 
+                active.url = url; 
+                active.titleSpan.innerText = getDomain(url); 
+                popup.urlInput.value = url; 
+                chrome.runtime.sendMessage({ action: 'prepareUrl', url: url }, () => {
+                    active.iframeEl.src = url;
+                });
+            } 
         };
+        
         popup.removeTab = (id) => {
             const idx = popup.tabs.findIndex(t => t.id === id); if (idx === -1) return;
             popup.tabs[idx].tabEl.remove(); popup.tabs[idx].iframeEl.remove(); popup.tabs.splice(idx, 1);
@@ -515,7 +498,6 @@ if (isTop) {
             popup.urlInput.value = url;
             if (!popup.singleIframe) { 
                 popup.singleIframe = document.createElement('iframe'); 
-                // DİKKAT: İframe ismini burada da veriyoruz
                 popup.singleIframe.name = 'minitab-iframe';
                 popup.singleIframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; clipboard-write; fullscreen; microphone; camera');
                 popup.singleIframe.setAttribute('referrerpolicy', 'no-referrer');
@@ -523,7 +505,9 @@ if (isTop) {
                 popup.singleIframe.addEventListener('load', () => { if (popup.isMuted) popup.singleIframe.contentWindow.postMessage({ type: 'MINITAB_MUTE', state: true }, '*'); });
                 popup.iframeWrapper.appendChild(popup.singleIframe); 
             }
-            popup.singleIframe.src = url;
+            chrome.runtime.sendMessage({ action: 'prepareUrl', url: url }, () => {
+                popup.singleIframe.src = url;
+            });
         };
 
         popup.close = () => { 
@@ -541,13 +525,24 @@ if (isTop) {
 // --- KULLANICI ETKİLEŞİMLERİ (Her Sayfa ve Normal İframe İçin) ---
 // ==========================================
 if (!isMiniTab) {
-    const progressIndicator = document.createElement('div');
-    progressIndicator.className = 'minitab-progress-indicator';
-    const progressDot = document.createElement('div');
-    progressDot.className = 'minitab-progress-dot';
-    progressIndicator.appendChild(progressDot); document.body.appendChild(progressIndicator);
+
+    let progressIndicator, progressDot;
+
+    function initIndicator() {
+        if (progressIndicator) return;
+        progressIndicator = document.createElement('div');
+        progressIndicator.className = 'minitab-progress-indicator';
+        progressDot = document.createElement('div');
+        progressDot.className = 'minitab-progress-dot';
+        progressIndicator.appendChild(progressDot);
+        
+        // Güvenli DOM ekleme (iframe henüz yüklenmemişse documentElement kullanılır)
+        if (document.body) document.body.appendChild(progressIndicator);
+        else document.documentElement.appendChild(progressIndicator);
+    }
 
     function startProgress(x, y, duration) {
+        initIndicator();
         progressIndicator.style.left = x + 'px'; 
         progressIndicator.style.top = y + 'px'; 
         progressIndicator.style.opacity = '1'; 
@@ -567,25 +562,22 @@ if (!isMiniTab) {
     }
     
     function stopProgress() { 
+        if (!progressIndicator) return;
         progressIndicator.style.opacity = '0'; 
         progressDot.style.transition = 'none'; 
         progressDot.style.transform = 'scale(0)'; 
         progressDot.style.opacity = '0.4'; 
     }
 
-    // Tetikleyici Fonksiyon (Eğer iframe içindeyse Ana Sayfaya mesaj atar)
     function fireMiniTabAction(url) {
-        if (isTop) {
-            triggerMiniTab(url);
-        } else {
-            window.top.postMessage({ type: 'MINITAB_OPEN', url: url }, '*');
-        }
+        if (isTop) triggerMiniTab(url);
+        else window.top.postMessage({ type: 'MINITAB_OPEN', url: url }, '*');
     }
 
     let hoveredLink = null, longHoverHalfTimer = null, longHoverFullTimer = null;
     let clickStartX = 0, clickStartY = 0, longClickHalfTimer = null, longClickFullTimer = null, longClickFired = false;
 
-    // SIFIR TOLERANS MOUSE HAREKETİ İPTALİ
+    // CAPTURE (TRUE): İframelerin tıklamayı yutmasını engeller!
     document.addEventListener('mousemove', (e) => {
         if (longClickHalfTimer || longClickFullTimer || longHoverHalfTimer || longHoverFullTimer) {
             if (e.clientX !== clickStartX || e.clientY !== clickStartY) {
@@ -597,7 +589,7 @@ if (!isMiniTab) {
                 stopProgress();
             }
         }
-    });
+    }, true);
 
     document.addEventListener('mouseover', (e) => {
         const link = e.target.closest('a');
@@ -609,76 +601,54 @@ if (!isMiniTab) {
                 const delayTime = duration / 3;
                 const fillTime = duration - delayTime;
                 
-                longHoverHalfTimer = setTimeout(() => {
-                    startProgress(clickStartX, clickStartY, fillTime);
-                }, delayTime);
-                
-                longHoverFullTimer = setTimeout(() => { 
-                    stopProgress(); 
-                    fireMiniTabAction(link.href); 
-                }, duration);
+                longHoverHalfTimer = setTimeout(() => { startProgress(clickStartX, clickStartY, fillTime); }, delayTime);
+                longHoverFullTimer = setTimeout(() => { stopProgress(); fireMiniTabAction(link.href); }, duration);
             }
         }
-    });
+    }, true);
 
     document.addEventListener('mouseout', (e) => {
         const link = e.target.closest('a');
         if (link && link === hoveredLink) { 
             hoveredLink = null; 
-            clearTimeout(longHoverHalfTimer); 
-            clearTimeout(longHoverFullTimer); 
-            longHoverHalfTimer = null; 
-            longHoverFullTimer = null; 
+            clearTimeout(longHoverHalfTimer); clearTimeout(longHoverFullTimer); 
+            longHoverHalfTimer = null; longHoverFullTimer = null; 
             stopProgress(); 
         }
-    });
+    }, true);
 
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space' && prefs.triggerHoverSpace && hoveredLink && hoveredLink.href) { e.preventDefault(); fireMiniTabAction(hoveredLink.href); }
-    });
+    }, true);
 
     document.addEventListener('dragstart', (e) => {
         if (prefs.triggerDragLink) {
             const link = e.target.closest('a');
             if (link && link.href) { e.preventDefault(); fireMiniTabAction(link.href); }
         }
-    });
+    }, true);
 
     document.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return; 
         const link = e.target.closest('a');
         if (link && link.href) {
             if (prefs.triggerLongClick) {
-                longClickFired = false; 
-                clickStartX = e.clientX; 
-                clickStartY = e.clientY;
-                
+                longClickFired = false; clickStartX = e.clientX; clickStartY = e.clientY;
                 const duration = prefs.longClickTime;
                 const delayTime = duration / 3;
                 const fillTime = duration - delayTime;
                 
-                longClickHalfTimer = setTimeout(() => {
-                    startProgress(clickStartX, clickStartY, fillTime);
-                }, delayTime);
-                
-                longClickFullTimer = setTimeout(() => { 
-                    longClickFired = true; 
-                    stopProgress(); 
-                    fireMiniTabAction(link.href); 
-                    longClickHalfTimer = null; 
-                    longClickFullTimer = null; 
-                }, duration);
+                longClickHalfTimer = setTimeout(() => { startProgress(clickStartX, clickStartY, fillTime); }, delayTime);
+                longClickFullTimer = setTimeout(() => { longClickFired = true; stopProgress(); fireMiniTabAction(link.href); longClickHalfTimer = null; longClickFullTimer = null; }, duration);
             }
         }
-    });
+    }, true);
 
     document.addEventListener('mouseup', () => { 
-        clearTimeout(longClickHalfTimer); 
-        clearTimeout(longClickFullTimer); 
-        longClickHalfTimer = null; 
-        longClickFullTimer = null; 
+        clearTimeout(longClickHalfTimer); clearTimeout(longClickFullTimer); 
+        longClickHalfTimer = null; longClickFullTimer = null; 
         stopProgress(); 
-    });
+    }, true);
 
     document.addEventListener('click', function(e) {
         const link = e.target.closest('a');
@@ -698,7 +668,7 @@ if (!isMiniTab) {
         } else {
             window.top.postMessage({ type: 'MINITAB_CLOSE_OUTSIDE' }, '*');
         }
-    });
+    }, true);
 
     document.addEventListener('wheel', (e) => {
         if (!prefs.closeScroll) return;
@@ -708,5 +678,5 @@ if (!isMiniTab) {
         } else {
             window.top.postMessage({ type: 'MINITAB_CLOSE_SCROLL' }, '*');
         }
-    });
+    }, { capture: true, passive: true });
 }
